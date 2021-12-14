@@ -1,0 +1,79 @@
+import React from 'react'
+import { Card, Button, Toast, ToastContainer } from 'react-bootstrap'
+import { useIssueTrackerContext } from '../store/context/issueTrackerContext'
+import {
+  deleteUser,
+  isShowDeleteUser,
+  isHideDeleteUser,
+} from '../store/reducer/issueTrackerReducer'
+const ListItemIssueTracker = () => {
+  const [{ users, isDelete }, dispatch] = useIssueTrackerContext()
+
+  const handleDeleteUser = (id) => () => {
+    dispatch(isShowDeleteUser())
+    dispatch(deleteUser(id.toString()))
+    setTimeout(() => {
+      dispatch(isHideDeleteUser())
+    }, 1500)
+  }
+  return (
+    <div>
+      {isDelete && (
+        <ToastContainer className="position-fixed" position="top-end">
+          <Toast delay={3000} autohide>
+            <Toast.Header>
+              <img
+                src="holder.js/20x20?text=%20"
+                className="rounded me-2"
+                alt=""
+              />
+              <strong className="me-auto text-danger">
+                Delete Successfully
+              </strong>
+              <small>Just a second</small>
+            </Toast.Header>
+            <Toast.Body>Have a nice day!!!</Toast.Body>
+          </Toast>
+        </ToastContainer>
+      )}
+      {(users.length === 0 && (
+        <Card className="w-100 mb-5 text-center" style={{ width: '18rem' }}>
+          <Card.Header>
+            <span className="me-3 fs-3 text-danger">No Items</span>
+          </Card.Header>
+        </Card>
+      )) ||
+        (users.length > 0 &&
+          users.map((item) => (
+            <Card
+              className="w-100 mb-5"
+              style={{ width: '18rem' }}
+              key={item.id}
+            >
+              <Card.Header>
+                <span className="me-3">{item.id}</span>
+                <Button variant="dark btn-sm">{item.status}</Button>
+              </Card.Header>
+              <Card.Body>
+                <Card.Title className="fs-4">{item.description}</Card.Title>
+                <Card.Text>
+                  <Button className="btn-sm" variant="primary">
+                    {item.severity}
+                  </Button>
+                </Card.Text>
+                <div className="d-flex justify-content-end">
+                  <Button className="me-3" variant="primary">
+                    Close
+                  </Button>
+                  <Button variant="danger" onClick={handleDeleteUser(item.id)}>
+                    Delete
+                  </Button>
+                </div>
+              </Card.Body>
+            </Card>
+          )))}
+    </div>
+  )
+}
+
+export default ListItemIssueTracker
