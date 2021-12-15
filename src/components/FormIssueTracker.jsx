@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
-import { Form, Button, Toast, ToastContainer } from 'react-bootstrap'
+import { Form, Button } from 'react-bootstrap'
+import IssueTrackerToast from './IssueTrackerToast'
 import {
   addUser,
   isShowLoadingUser,
@@ -9,6 +10,7 @@ import { useIssueTrackerContext } from '../store/context/issueTrackerContext'
 import { v4 as uuidv4 } from 'uuid'
 const FormIssueTracker = () => {
   const [{ isLoading }, dispatch] = useIssueTrackerContext()
+  const [isError, setIsError] = useState(false)
   const [form, setForm] = useState({
     id: uuidv4(),
     description: '',
@@ -18,6 +20,8 @@ const FormIssueTracker = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault()
+    form.description === '' ? setIsError(true) : setIsError(false)
+    if (form.description === '') return
     dispatch(isShowLoadingUser())
     setForm({ id: uuidv4(), description: '', severity: 'low', status: 'new' })
 
@@ -31,20 +35,7 @@ const FormIssueTracker = () => {
   return (
     <>
       {isLoading && (
-        <ToastContainer className="position-fixed" position="top-end">
-          <Toast delay={3000} autohide>
-            <Toast.Header>
-              <img
-                src="holder.js/20x20?text=%20"
-                className="rounded me-2"
-                alt=""
-              />
-              <strong className="me-auto text-success">Add Successfully</strong>
-              <small>Just a second</small>
-            </Toast.Header>
-            <Toast.Body>Have a nice day!!!</Toast.Body>
-          </Toast>
-        </ToastContainer>
+        <IssueTrackerToast title="Add Successfully" color="text-success" />
       )}
 
       <Form onSubmit={handleSubmit} className=" border-bottom pb-4">
@@ -65,6 +56,9 @@ const FormIssueTracker = () => {
               })
             }
           />
+          {form.description === '' && isError && (
+            <p className="text-center fs-5 text-danger">Please Enter Input</p>
+          )}
         </Form.Group>
         <Form.Group className="mb-3" controlId="formBasicEmail">
           <Form.Label>Severity</Form.Label>

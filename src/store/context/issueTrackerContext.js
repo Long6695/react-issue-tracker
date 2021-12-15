@@ -9,65 +9,69 @@ import axios from 'axios'
 const issueTrackerContext = createContext()
 
 const IssueTrackerContextProvider = ({ children }) => {
-  const [{ users, user, deleteUser, isLoading, isDelete }, dispatch] =
-    useReducer(reducer, initialState)
-
+  const [
+    { url, method, users, user, isLoading, isDelete, filteredText, status },
+    dispatch,
+  ] = useReducer(reducer, initialState)
+  // get post delete api
   useEffect(() => {
     try {
       const fetchData = async () => {
         const res = await axios({
-          method: 'get',
-          url: 'https://tony-json-server.herokuapp.com/api/todos',
+          method: method,
+          url: url,
+          data: method === 'post' ? user : null,
         })
 
-        dispatch(fetchDataUsers(res.data.data))
+        // get users
+        if (method === 'get') {
+          dispatch(fetchDataUsers(res.data.data))
+        }
+
+        // filter by search bar
+        if (method === 'get' && filteredText.length > 0) {
+          dispatch(
+            fetchDataUsers(
+              res.data.data.filter((item) =>
+                item.description.includes(filteredText)
+              )
+            )
+          )
+        }
+
+        // add user
+        if (method === 'post' && Object.keys(user).length === 0) return
+
+        // filter by status
+        if (method === 'get' && status === 'close') {
+          dispatch(
+            fetchDataUsers(
+              res.data.data.filter((item) => item.description.includes('close'))
+            )
+          )
+        }
+
+        if (method === 'get' && status === 'open') {
+          dispatch(
+            fetchDataUsers(
+              res.data.data.filter((item) => item.description.includes('open'))
+            )
+          )
+        }
+
+        if (method === 'get' && status === 'all') {
+          dispatch(fetchDataUsers(res.data.data))
+        }
       }
       fetchData()
     } catch (error) {
       throw new Error(error)
     }
-  }, [])
-
-  useEffect(() => {
-    try {
-      if (Object.keys(user).length === 0) return
-      const fetchData = async () => {
-        await axios({
-          method: 'post',
-          url: 'https://tony-json-server.herokuapp.com/api/todos',
-          data: user,
-        })
-      }
-
-      fetchData()
-    } catch (error) {
-      throw new Error(error)
-    }
-  }, [user])
-
-  useEffect(() => {
-    try {
-      if (Object.keys(deleteUser).length === 0) return
-      const user = deleteUser.find((item) => item.id)
-      const fetchData = async () => {
-        await axios({
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          method: 'delete',
-          url: `https://tony-json-server.herokuapp.com/api/todos/${user.id}`,
-        })
-      }
-
-      fetchData()
-    } catch (error) {
-      throw new Error(error)
-    }
-  }, [deleteUser])
+  }, [url, user, method, filteredText, status])
 
   return (
     <issueTrackerContext.Provider
-      value={[{ users, user, isLoading, isDelete }, dispatch]}
+      value={[{ users, isLoading, isDelete }, dispatch]}
     >
       {children}
     </issueTrackerContext.Provider>

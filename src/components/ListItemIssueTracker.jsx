@@ -1,5 +1,6 @@
 import React from 'react'
-import { Card, Button, Toast, ToastContainer } from 'react-bootstrap'
+import { Card, Button } from 'react-bootstrap'
+import IssueTrackerToast from './IssueTrackerToast'
 import { useIssueTrackerContext } from '../store/context/issueTrackerContext'
 import {
   deleteUser,
@@ -16,25 +17,11 @@ const ListItemIssueTracker = () => {
       dispatch(isHideDeleteUser())
     }, 1500)
   }
+
   return (
     <div>
       {isDelete && (
-        <ToastContainer className="position-fixed" position="top-end">
-          <Toast delay={3000} autohide>
-            <Toast.Header>
-              <img
-                src="holder.js/20x20?text=%20"
-                className="rounded me-2"
-                alt=""
-              />
-              <strong className="me-auto text-danger">
-                Delete Successfully
-              </strong>
-              <small>Just a second</small>
-            </Toast.Header>
-            <Toast.Body>Have a nice day!!!</Toast.Body>
-          </Toast>
-        </ToastContainer>
+        <IssueTrackerToast title="Delete Successfully" color="text-danger" />
       )}
       {(users.length === 0 && (
         <Card className="w-100 mb-5 text-center" style={{ width: '18rem' }}>

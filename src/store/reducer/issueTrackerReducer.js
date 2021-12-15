@@ -5,6 +5,8 @@ const SHOW_LOADING = 'ISSUES_TRACKER/SHOW_LOADING'
 const HIDE_LOADING = 'ISSUES_TRACKER/HIDE_LOADING'
 const SHOW_DELETE = 'ISSUES_TRACKER/SHOW_DELETE'
 const HIDE_DELETE = 'ISSUES_TRACKER/HIDE_DELETE'
+const SEARCH_USER = 'ISSUES_TRACKER/SEARCH_USER'
+const STATUS_USER = 'ISSUES_TRACKER/STATUS_USER'
 const fetchDataUsers = (users) => {
   return {
     type: FETCH_DATA_USERS,
@@ -12,10 +14,10 @@ const fetchDataUsers = (users) => {
   }
 }
 
-const addUser = (users) => {
+const addUser = (user) => {
   return {
     type: ADD_USER,
-    payload: users,
+    payload: user,
   }
 }
 
@@ -50,10 +52,28 @@ const isHideDeleteUser = () => {
   }
 }
 
+const searchUser = (user) => {
+  return {
+    type: SEARCH_USER,
+    payload: user,
+  }
+}
+
+const filteredCloseStatus = (status) => {
+  return {
+    type: STATUS_USER,
+    payload: status,
+  }
+}
+
 let initialState = {
+  url: 'https://tony-json-server.herokuapp.com/api/todos',
+  method: 'get',
   users: [],
   user: {},
+  filteredText: '',
   deleteUser: {},
+  status: '',
   isLoading: false,
   isDelete: false,
 }
@@ -70,6 +90,7 @@ const reducer = (state, action) => {
         ...state,
         users: [...state.users, action.payload],
         user: action.payload,
+        method: 'post',
       }
 
     case DELETE_USER:
@@ -82,6 +103,8 @@ const reducer = (state, action) => {
         ...state,
         users: newUser,
         deleteUser: removeUser,
+        method: 'delete',
+        url: `https://tony-json-server.herokuapp.com/api/todos/${action.payload}`,
       }
 
     case SHOW_LOADING:
@@ -106,6 +129,20 @@ const reducer = (state, action) => {
         ...state,
         isDelete: false,
       }
+
+    case SEARCH_USER:
+      return {
+        ...state,
+        method: 'get',
+        filteredText: action.payload,
+      }
+
+    case STATUS_USER:
+      return {
+        ...state,
+        method: 'get',
+        status: action.payload,
+      }
     default:
       return state
   }
@@ -121,4 +158,6 @@ export {
   isHideLoadingUser,
   isShowDeleteUser,
   isHideDeleteUser,
+  searchUser,
+  filteredCloseStatus,
 }
