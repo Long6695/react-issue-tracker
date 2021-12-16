@@ -7,6 +7,9 @@ const SHOW_DELETE = 'ISSUES_TRACKER/SHOW_DELETE'
 const HIDE_DELETE = 'ISSUES_TRACKER/HIDE_DELETE'
 const SEARCH_USER = 'ISSUES_TRACKER/SEARCH_USER'
 const STATUS_USER = 'ISSUES_TRACKER/STATUS_USER'
+const ORDERBY_USER = 'ISSUES_TRACKER/ORDERBY_USER'
+const UPDATE_USER = 'ISSUES_TRACKER/UPDATE_USER'
+
 const fetchDataUsers = (users) => {
   return {
     type: FETCH_DATA_USERS,
@@ -66,6 +69,20 @@ const filteredCloseStatus = (status) => {
   }
 }
 
+const orderByCharacter = (payload) => {
+  return {
+    type: ORDERBY_USER,
+    payload,
+  }
+}
+
+const updateStatusUser = (payload) => {
+  return {
+    type: UPDATE_USER,
+    payload,
+  }
+}
+
 let initialState = {
   url: 'https://tony-json-server.herokuapp.com/api/todos',
   method: 'get',
@@ -74,8 +91,10 @@ let initialState = {
   filteredText: '',
   deleteUser: {},
   status: '',
+  orderby: 'asc',
   isLoading: false,
   isDelete: false,
+  updateUser: {},
 }
 
 const reducer = (state, action) => {
@@ -91,6 +110,7 @@ const reducer = (state, action) => {
         users: [...state.users, action.payload],
         user: action.payload,
         method: 'post',
+        url: 'https://tony-json-server.herokuapp.com/api/todos',
       }
 
     case DELETE_USER:
@@ -105,6 +125,29 @@ const reducer = (state, action) => {
         deleteUser: removeUser,
         method: 'delete',
         url: `https://tony-json-server.herokuapp.com/api/todos/${action.payload}`,
+      }
+
+    case UPDATE_USER:
+      const newUsersUpdate = [...state.users]
+      const currentIndexUser = newUsersUpdate.findIndex(
+        (item) => item.id === action.payload
+      )
+
+      newUsersUpdate[currentIndexUser].status =
+        newUsersUpdate[currentIndexUser].status === 'new'
+          ? 'open'
+          : newUsersUpdate[currentIndexUser].status === 'open'
+          ? 'close'
+          : 'open'
+
+      return {
+        ...state,
+        method: 'patch',
+        url: `https://tony-json-server.herokuapp.com/api/todos/${action.payload}`,
+        updateUser: {
+          ...newUsersUpdate[currentIndexUser],
+        },
+        users: newUsersUpdate,
       }
 
     case SHOW_LOADING:
@@ -134,6 +177,7 @@ const reducer = (state, action) => {
       return {
         ...state,
         method: 'get',
+        url: 'https://tony-json-server.herokuapp.com/api/todos',
         filteredText: action.payload,
       }
 
@@ -141,7 +185,30 @@ const reducer = (state, action) => {
       return {
         ...state,
         method: 'get',
+        url: 'https://tony-json-server.herokuapp.com/api/todos',
         status: action.payload,
+      }
+    case ORDERBY_USER:
+      let newUsers = [...state.users]
+      if (action.payload === 'asc') {
+        newUsers.sort((a, b) => {
+          return action.payload === 'asc' &&
+            a.description.length > b.description.length
+            ? -1
+            : 1
+        })
+      }
+      if (action.payload === 'desc') {
+        newUsers.sort((a, b) => {
+          return action.payload === 'desc' &&
+            a.description.length > b.description.length
+            ? 1
+            : -1
+        })
+      }
+      return {
+        ...state,
+        users: newUsers,
       }
     default:
       return state
@@ -160,4 +227,6 @@ export {
   isHideDeleteUser,
   searchUser,
   filteredCloseStatus,
+  orderByCharacter,
+  updateStatusUser,
 }

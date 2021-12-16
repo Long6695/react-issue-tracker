@@ -10,9 +10,20 @@ const issueTrackerContext = createContext()
 
 const IssueTrackerContextProvider = ({ children }) => {
   const [
-    { url, method, users, user, isLoading, isDelete, filteredText, status },
+    {
+      url,
+      method,
+      users,
+      user,
+      isLoading,
+      isDelete,
+      filteredText,
+      status,
+      updateUser,
+    },
     dispatch,
   ] = useReducer(reducer, initialState)
+
   // get post delete api
   useEffect(() => {
     try {
@@ -20,7 +31,8 @@ const IssueTrackerContextProvider = ({ children }) => {
         const res = await axios({
           method: method,
           url: url,
-          data: method === 'post' ? user : null,
+          data:
+            (method === 'post' && user) || (method === 'patch' && updateUser),
         })
 
         // get users
@@ -41,12 +53,14 @@ const IssueTrackerContextProvider = ({ children }) => {
 
         // add user
         if (method === 'post' && Object.keys(user).length === 0) return
+        // update user
+        if (method === 'patch' && Object.keys(updateUser).length === 0) return
 
         // filter by status
         if (method === 'get' && status === 'close') {
           dispatch(
             fetchDataUsers(
-              res.data.data.filter((item) => item.description.includes('close'))
+              res.data.data.filter((item) => item.status === 'close')
             )
           )
         }
@@ -54,7 +68,7 @@ const IssueTrackerContextProvider = ({ children }) => {
         if (method === 'get' && status === 'open') {
           dispatch(
             fetchDataUsers(
-              res.data.data.filter((item) => item.description.includes('open'))
+              res.data.data.filter((item) => item.status === 'open')
             )
           )
         }
@@ -67,7 +81,7 @@ const IssueTrackerContextProvider = ({ children }) => {
     } catch (error) {
       throw new Error(error)
     }
-  }, [url, user, method, filteredText, status])
+  }, [url, user, method, filteredText, status, updateUser])
 
   return (
     <issueTrackerContext.Provider

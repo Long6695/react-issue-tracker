@@ -6,6 +6,7 @@ import {
   deleteUser,
   isShowDeleteUser,
   isHideDeleteUser,
+  updateStatusUser,
 } from '../store/reducer/issueTrackerReducer'
 const ListItemIssueTracker = () => {
   const [{ users, isDelete }, dispatch] = useIssueTrackerContext()
@@ -16,6 +17,10 @@ const ListItemIssueTracker = () => {
     setTimeout(() => {
       dispatch(isHideDeleteUser())
     }, 1500)
+  }
+
+  const handleChangeStatus = (id) => () => {
+    dispatch(updateStatusUser(id))
   }
 
   return (
@@ -49,7 +54,11 @@ const ListItemIssueTracker = () => {
                   </Button>
                 </Card.Text>
                 <div className="d-flex justify-content-end">
-                  <Button className="me-3" variant="primary">
+                  <Button
+                    className="me-3"
+                    variant="primary"
+                    onClick={handleChangeStatus(item.id)}
+                  >
                     Close
                   </Button>
                   <Button variant="danger" onClick={handleDeleteUser(item.id)}>
