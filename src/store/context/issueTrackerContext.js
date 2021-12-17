@@ -37,7 +37,13 @@ const IssueTrackerContextProvider = ({ children }) => {
 
         // get users
         if (method === 'get') {
-          dispatch(fetchDataUsers(res.data.data))
+          dispatch(
+            fetchDataUsers(
+              res.data.data.sort((a, b) => {
+                return a.description > b.description ? 1 : -1
+              })
+            )
+          )
         }
 
         // filter by search bar

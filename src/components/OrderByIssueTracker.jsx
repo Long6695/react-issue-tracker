@@ -5,6 +5,11 @@ import { useIssueTrackerContext } from '../store/context/issueTrackerContext'
 const OrderByIssueTracker = () => {
   const [, dispatch] = useIssueTrackerContext()
 
+  // useEffect(() => {
+  //   console.log('abc')
+  //   dispatch(orderByCharacter('asc'))
+  // }, [dispatch])
+
   const handleOrderByCharacter = (e) => {
     dispatch(orderByCharacter(e.target.value))
   }

@@ -107,7 +107,7 @@ const reducer = (state, action) => {
     case ADD_USER:
       return {
         ...state,
-        users: [...state.users, action.payload],
+        users: [action.payload, ...state.users],
         user: action.payload,
         method: 'post',
         url: 'https://tony-json-server.herokuapp.com/api/todos',
@@ -134,12 +134,10 @@ const reducer = (state, action) => {
       )
 
       newUsersUpdate[currentIndexUser].status =
-        newUsersUpdate[currentIndexUser].status === 'new'
+        newUsersUpdate[currentIndexUser].status === 'new' ||
+        newUsersUpdate[currentIndexUser].status === 'close'
           ? 'open'
-          : newUsersUpdate[currentIndexUser].status === 'open'
-          ? 'close'
-          : 'open'
-
+          : 'close'
       return {
         ...state,
         method: 'patch',
@@ -192,18 +190,16 @@ const reducer = (state, action) => {
       let newUsers = [...state.users]
       if (action.payload === 'asc') {
         newUsers.sort((a, b) => {
-          return action.payload === 'asc' &&
-            a.description.length > b.description.length
-            ? -1
-            : 1
+          return action.payload === 'asc' && a.description > b.description
+            ? 1
+            : -1
         })
       }
       if (action.payload === 'desc') {
         newUsers.sort((a, b) => {
-          return action.payload === 'desc' &&
-            a.description.length > b.description.length
-            ? 1
-            : -1
+          return action.payload === 'desc' && a.description > b.description
+            ? -1
+            : 1
         })
       }
       return {
