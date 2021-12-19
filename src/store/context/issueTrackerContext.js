@@ -10,20 +10,9 @@ const issueTrackerContext = createContext()
 
 const IssueTrackerContextProvider = ({ children }) => {
   const [
-    {
-      url,
-      method,
-      users,
-      user,
-      isLoading,
-      isDelete,
-      filteredText,
-      status,
-      updateUser,
-    },
+    { url, method, users, user, isLoading, isDelete, filteredText, status },
     dispatch,
   ] = useReducer(reducer, initialState)
-
   // get post delete api
   useEffect(() => {
     try {
@@ -32,7 +21,7 @@ const IssueTrackerContextProvider = ({ children }) => {
           method: method,
           url: url,
           data:
-            (method === 'post' && user) || (method === 'patch' && updateUser),
+            (method === 'post' && user) || (method === 'patch' && { status }),
         })
 
         // get users
@@ -56,11 +45,10 @@ const IssueTrackerContextProvider = ({ children }) => {
             )
           )
         }
-
+        // update user
+        if (method === 'patch' && status === '') return
         // add user
         if (method === 'post' && Object.keys(user).length === 0) return
-        // update user
-        if (method === 'patch' && Object.keys(updateUser).length === 0) return
 
         // filter by status
         if (method === 'get' && status === 'close') {
@@ -87,7 +75,7 @@ const IssueTrackerContextProvider = ({ children }) => {
     } catch (error) {
       throw new Error(error)
     }
-  }, [url, user, method, filteredText, status, updateUser])
+  }, [url, user, method, filteredText, status])
 
   return (
     <issueTrackerContext.Provider

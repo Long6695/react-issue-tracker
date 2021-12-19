@@ -84,12 +84,12 @@ const updateStatusUser = (payload) => {
 }
 
 let initialState = {
+  id: '',
   url: 'https://tony-json-server.herokuapp.com/api/todos',
   method: 'get',
   users: [],
   user: {},
   filteredText: '',
-  deleteUser: {},
   status: '',
   orderby: 'asc',
   isLoading: false,
@@ -118,11 +118,10 @@ const reducer = (state, action) => {
       const currentIndex = newUser.findIndex(
         (item) => item.id === action.payload
       )
-      const removeUser = newUser.splice(currentIndex, 1)
+      newUser.splice(currentIndex, 1)
       return {
         ...state,
         users: newUser,
-        deleteUser: removeUser,
         method: 'delete',
         url: `https://tony-json-server.herokuapp.com/api/todos/${action.payload}`,
       }
@@ -142,9 +141,7 @@ const reducer = (state, action) => {
         ...state,
         method: 'patch',
         url: `https://tony-json-server.herokuapp.com/api/todos/${action.payload}`,
-        updateUser: {
-          ...newUsersUpdate[currentIndexUser],
-        },
+        status: newUsersUpdate[currentIndexUser].status,
         users: newUsersUpdate,
       }
 
