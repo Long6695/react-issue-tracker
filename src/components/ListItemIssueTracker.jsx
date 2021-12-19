@@ -19,8 +19,8 @@ const ListItemIssueTracker = () => {
     }, 1500)
   }
 
-  const handleChangeStatus = (id) => () => {
-    dispatch(updateStatusUser(id))
+  const handleChangeStatus = (status, id) => () => {
+    dispatch(updateStatusUser(status, id))
   }
 
   return (
@@ -57,9 +57,13 @@ const ListItemIssueTracker = () => {
                   <Button
                     className="me-3"
                     variant="primary"
-                    onClick={handleChangeStatus(item.id)}
+                    onClick={handleChangeStatus(item.status, item.id)}
                   >
-                    Close
+                    {item.status === 'new'
+                      ? 'Open'
+                      : item.status === 'open'
+                      ? 'Close'
+                      : 'Open'}
                   </Button>
                   <Button variant="danger" onClick={handleDeleteUser(item.id)}>
                     Delete

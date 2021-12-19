@@ -14,6 +14,7 @@ const IssueTrackerContextProvider = ({ children }) => {
     dispatch,
   ] = useReducer(reducer, initialState)
   // get post delete api
+  console.log(filteredText)
   useEffect(() => {
     try {
       const fetchData = async () => {
@@ -45,8 +46,6 @@ const IssueTrackerContextProvider = ({ children }) => {
             )
           )
         }
-        // update user
-        if (method === 'patch' && status === '') return
         // add user
         if (method === 'post' && Object.keys(user).length === 0) return
 

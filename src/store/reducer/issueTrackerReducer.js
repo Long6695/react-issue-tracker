@@ -62,7 +62,7 @@ const searchUser = (user) => {
   }
 }
 
-const filteredCloseStatus = (status) => {
+const filteredStatus = (status) => {
   return {
     type: STATUS_USER,
     payload: status,
@@ -76,10 +76,11 @@ const orderByCharacter = (payload) => {
   }
 }
 
-const updateStatusUser = (payload) => {
+const updateStatusUser = (status, id) => {
   return {
     type: UPDATE_USER,
-    payload,
+    payload: status,
+    id,
   }
 }
 
@@ -102,6 +103,8 @@ const reducer = (state, action) => {
     case FETCH_DATA_USERS:
       return {
         ...state,
+        method: 'get',
+        url: 'https://tony-json-server.herokuapp.com/api/todos',
         users: action.payload,
       }
     case ADD_USER:
@@ -128,20 +131,23 @@ const reducer = (state, action) => {
 
     case UPDATE_USER:
       const newUsersUpdate = [...state.users]
-      const currentIndexUser = newUsersUpdate.findIndex(
-        (item) => item.id === action.payload
+      const currentIndexUserUpdate = newUsersUpdate.findIndex(
+        (item) => item.id === action.id
       )
 
-      newUsersUpdate[currentIndexUser].status =
-        newUsersUpdate[currentIndexUser].status === 'new' ||
-        newUsersUpdate[currentIndexUser].status === 'close'
+      newUsersUpdate[currentIndexUserUpdate].status =
+        action.payload === 'new' || action.payload === 'close'
           ? 'open'
           : 'close'
+
       return {
         ...state,
         method: 'patch',
-        url: `https://tony-json-server.herokuapp.com/api/todos/${action.payload}`,
-        status: newUsersUpdate[currentIndexUser].status,
+        url: `https://tony-json-server.herokuapp.com/api/todos/${action.id}`,
+        status:
+          action.payload === 'new' || action.payload === 'close'
+            ? 'open'
+            : 'close',
         users: newUsersUpdate,
       }
 
@@ -219,7 +225,7 @@ export {
   isShowDeleteUser,
   isHideDeleteUser,
   searchUser,
-  filteredCloseStatus,
+  filteredStatus,
   orderByCharacter,
   updateStatusUser,
 }
