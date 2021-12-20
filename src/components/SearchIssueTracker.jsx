@@ -1,14 +1,14 @@
-import React, { useRef } from 'react'
+import React, { useRef, useState } from 'react'
 import { searchUser } from '../store/reducer/issueTrackerReducer'
 import { useIssueTrackerContext } from '../store/context/issueTrackerContext'
 import { Form } from 'react-bootstrap'
 const SearchIssueTracker = () => {
   const [, dispatch] = useIssueTrackerContext()
   const typingTimeoutRef = useRef(null)
-
+  const [searchValue, setSearchValue] = useState('')
   const handleSearchValue = (e) => {
     const value = e.target.value
-
+    setSearchValue(value)
     if (typingTimeoutRef.current) {
       clearTimeout(typingTimeoutRef.current)
     }
@@ -25,8 +25,8 @@ const SearchIssueTracker = () => {
         className="w-25"
         type="text"
         placeholder="Search by description..."
-        onKeyUp={handleSearchValue}
-        tabIndex="0"
+        value={searchValue}
+        onChange={handleSearchValue}
       />
     </div>
   )

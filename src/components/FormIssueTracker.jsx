@@ -9,7 +9,7 @@ import {
 import { useIssueTrackerContext } from '../store/context/issueTrackerContext'
 import { v4 as uuidv4 } from 'uuid'
 const FormIssueTracker = () => {
-  const [{ isLoading }, dispatch] = useIssueTrackerContext()
+  const [{ isAddSuccess }, dispatch] = useIssueTrackerContext()
   const [isError, setIsError] = useState(false)
   const [form, setForm] = useState({
     id: uuidv4(),
@@ -34,7 +34,7 @@ const FormIssueTracker = () => {
 
   return (
     <>
-      {isLoading && (
+      {isAddSuccess && (
         <IssueTrackerToast title="Add Successfully" color="text-success" />
       )}
 
@@ -63,6 +63,7 @@ const FormIssueTracker = () => {
         <Form.Group className="mb-3" controlId="formBasicEmail">
           <Form.Label>Severity</Form.Label>
           <Form.Select
+            value={form.severity}
             onChange={(e) =>
               setForm((prev) => {
                 return {

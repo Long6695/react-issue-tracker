@@ -84,18 +84,20 @@ const updateStatusUser = (status, id) => {
   }
 }
 
-let initialState = {
-  id: '',
-  url: 'https://tony-json-server.herokuapp.com/api/todos',
-  method: 'get',
+const initialState = {
+  api: {
+    url: 'https://tony-json-server.herokuapp.com/api/todos',
+    method: 'get',
+  },
   users: [],
   user: {},
-  filteredText: '',
-  status: '',
-  orderby: 'asc',
-  isLoading: false,
-  isDelete: false,
-  updateUser: {},
+  filters: {
+    search: '',
+    orderby: '',
+    status: '',
+  },
+  isAddSuccess: false,
+  isDeleteSuccess: false,
 }
 
 const reducer = (state, action) => {
@@ -103,8 +105,11 @@ const reducer = (state, action) => {
     case FETCH_DATA_USERS:
       return {
         ...state,
-        method: 'get',
-        url: 'https://tony-json-server.herokuapp.com/api/todos',
+        api: {
+          ...state.api,
+          url: 'https://tony-json-server.herokuapp.com/api/todos',
+          method: 'get',
+        },
         users: action.payload,
       }
     case ADD_USER:
@@ -112,8 +117,11 @@ const reducer = (state, action) => {
         ...state,
         users: [action.payload, ...state.users],
         user: action.payload,
-        method: 'post',
-        url: 'https://tony-json-server.herokuapp.com/api/todos',
+        api: {
+          ...state.api,
+          method: 'post',
+          url: 'https://tony-json-server.herokuapp.com/api/todos',
+        },
       }
 
     case DELETE_USER:
@@ -125,8 +133,11 @@ const reducer = (state, action) => {
       return {
         ...state,
         users: newUser,
-        method: 'delete',
-        url: `https://tony-json-server.herokuapp.com/api/todos/${action.payload}`,
+        api: {
+          ...state.api,
+          method: 'delete',
+          url: `https://tony-json-server.herokuapp.com/api/todos/${action.payload}`,
+        },
       }
 
     case UPDATE_USER:
@@ -142,64 +153,82 @@ const reducer = (state, action) => {
 
       return {
         ...state,
-        method: 'patch',
-        url: `https://tony-json-server.herokuapp.com/api/todos/${action.id}`,
-        status:
-          action.payload === 'new' || action.payload === 'close'
-            ? 'open'
-            : 'close',
+        api: {
+          ...state.api,
+          method: 'patch',
+          url: `https://tony-json-server.herokuapp.com/api/todos/${action.id}`,
+        },
+        filters: {
+          ...state.filters,
+          status:
+            action.payload === 'new' || action.payload === 'close'
+              ? 'open'
+              : 'close',
+        },
         users: newUsersUpdate,
       }
 
     case SHOW_LOADING:
       return {
         ...state,
-        isLoading: true,
+        isAddSuccess: true,
       }
 
     case HIDE_LOADING:
       return {
         ...state,
-        isLoading: false,
+        isAddSuccess: false,
       }
     case SHOW_DELETE:
       return {
         ...state,
-        isDelete: true,
+        isDeleteSuccess: true,
       }
 
     case HIDE_DELETE:
       return {
         ...state,
-        isDelete: false,
+        isDeleteSuccess: false,
       }
 
     case SEARCH_USER:
       return {
         ...state,
-        method: 'get',
-        url: 'https://tony-json-server.herokuapp.com/api/todos',
-        filteredText: action.payload,
+        api: {
+          ...state.api,
+          method: 'get',
+          url: 'https://tony-json-server.herokuapp.com/api/todos',
+        },
+        filters: {
+          ...state.filters,
+          search: action.payload,
+        },
       }
 
     case STATUS_USER:
       return {
         ...state,
-        method: 'get',
-        url: 'https://tony-json-server.herokuapp.com/api/todos',
-        status: action.payload,
+        api: {
+          ...state.api,
+          method: 'get',
+          url: 'https://tony-json-server.herokuapp.com/api/todos',
+        },
+        filters: {
+          ...state.filters,
+          status: action.payload,
+        },
       }
     case ORDERBY_USER:
-      let newUsers = [...state.users]
+      let sortedUsers = [...state.users]
       if (action.payload === 'asc') {
-        newUsers.sort((a, b) => {
+        sortedUsers.sort((a, b) => {
           return action.payload === 'asc' && a.description > b.description
             ? 1
             : -1
         })
       }
       if (action.payload === 'desc') {
-        newUsers.sort((a, b) => {
+        sortedUsers.sort((a, b) => {
           return action.payload === 'desc' && a.description > b.description
             ? -1
             : 1
@@ -207,7 +236,7 @@ const reducer = (state, action) => {
       }
       return {
         ...state,
-        users: newUsers,
+        users: sortedUsers,
       }
     default:
       return state

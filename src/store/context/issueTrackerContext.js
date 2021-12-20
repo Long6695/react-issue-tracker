@@ -10,11 +10,13 @@ const issueTrackerContext = createContext()
 
 const IssueTrackerContextProvider = ({ children }) => {
   const [
-    { url, method, users, user, isLoading, isDelete, filteredText, status },
+    { api, users, user, filters, isAddSuccess, isDeleteSuccess },
     dispatch,
   ] = useReducer(reducer, initialState)
+  const { url, method } = api
+  const { status, search } = filters
+
   // get post delete api
-  console.log(filteredText)
   useEffect(() => {
     try {
       const fetchData = async () => {
@@ -37,12 +39,10 @@ const IssueTrackerContextProvider = ({ children }) => {
         }
 
         // filter by search bar
-        if (method === 'get' && filteredText.length > 0) {
+        if (method === 'get' && search.length > 0) {
           dispatch(
             fetchDataUsers(
-              res.data.data.filter((item) =>
-                item.description.includes(filteredText)
-              )
+              res.data.data.filter((item) => item.description.includes(search))
             )
           )
         }
@@ -74,11 +74,11 @@ const IssueTrackerContextProvider = ({ children }) => {
     } catch (error) {
       throw new Error(error)
     }
-  }, [url, user, method, filteredText, status])
+  }, [url, user, method, search, status])
 
   return (
     <issueTrackerContext.Provider
-      value={[{ users, isLoading, isDelete }, dispatch]}
+      value={[{ users, isAddSuccess, isDeleteSuccess }, dispatch]}
     >
       {children}
     </issueTrackerContext.Provider>
