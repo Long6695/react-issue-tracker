@@ -39,7 +39,7 @@ const FormIssueTracker = () => {
       )}
 
       <Form onSubmit={handleSubmit} className=" border-bottom pb-4">
-        <h1 className="text-center py-5 mb-0 fs-1 fw-light">Todo Tracker</h1>
+        <h1 className="text-center py-5 mb-0 fs-1 fw-light">Issue Tracker</h1>
 
         <Form.Group className="mb-3" controlId="formBasicEmail">
           <Form.Label>Description</Form.Label>
