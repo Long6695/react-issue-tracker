@@ -1,6 +1,7 @@
 import React from 'react'
 import { Container, Row, Col } from 'react-bootstrap'
-const AppContainer = ({ children }) => {
+
+const MainLayout = ({ children }) => {
   return (
     <Container>
       <Row>
@@ -10,4 +11,4 @@ const AppContainer = ({ children }) => {
   )
 }
 
-export default AppContainer
+export default MainLayout

@@ -1,27 +1,22 @@
 import React from 'react'
+//libs
 import { Card, Button } from 'react-bootstrap'
+
+import { useIssueContext } from 'context/issueTrackerContext'
+//components
 import IssueTrackerToast from './IssueTrackerToast'
-import { useIssueTrackerContext } from '../store/context/issueTrackerContext'
-import {
-  deleteUser,
-  isShowDeleteUser,
-  isHideDeleteUser,
-  updateStatusUser,
-} from '../store/reducer/issueTrackerReducer'
 
 const ListItemIssueTracker = () => {
-  const [{ users, isDeleteSuccess }, dispatch] = useIssueTrackerContext()
+  const { deleteIssue, isDeleteSuccess, updateStateIssue, isFilteredIssues } =
+    useIssueContext()
 
   const handleDeleteUser = (id) => () => {
-    dispatch(isShowDeleteUser())
-    dispatch(deleteUser(id))
-    setTimeout(() => {
-      dispatch(isHideDeleteUser())
-    }, 1000)
+    deleteIssue(id)
   }
 
   const handleChangeStatus = (status, id) => () => {
-    dispatch(updateStatusUser(status, id))
+    status = status === 'new' || status === 'close' ? 'open' : 'close'
+    updateStateIssue(status, id)
   }
 
   return (
@@ -29,15 +24,15 @@ const ListItemIssueTracker = () => {
       {isDeleteSuccess && (
         <IssueTrackerToast title="Delete Successfully" color="text-danger" />
       )}
-      {(users.length === 0 && (
+      {(isFilteredIssues.length === 0 && (
         <Card className="w-100 mb-5 text-center" style={{ width: '18rem' }}>
           <Card.Header>
             <span className="me-3 fs-3 text-danger">No Items</span>
           </Card.Header>
         </Card>
       )) ||
-        (users.length > 0 &&
-          users.map((item) => (
+        (isFilteredIssues.length > 0 &&
+          isFilteredIssues.map((item) => (
             <Card
               className="w-100 mb-5"
               style={{ width: '18rem' }}
@@ -66,10 +61,7 @@ const ListItemIssueTracker = () => {
                       (item.severity === 'low' && 'dark')
                     }
                   >
-                    {item.severity.replace(
-                      item.severity.charAt(0),
-                      item.severity.charAt(0).toUpperCase()
-                    )}
+                    {item.severity}
                   </Button>
                 </Card.Text>
                 <div className="d-flex justify-content-end">

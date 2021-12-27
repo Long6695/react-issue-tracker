@@ -1,14 +1,13 @@
 import './App.css'
 
-import AppContainer from './UI/AppContainer'
-import FormIssueTracker from './components/FormIssueTracker'
-import ListIssueTracker from './components/ListIssueTracker'
+import MainLayout from 'layout/MainLayout'
+
+import Issue from 'features/issue/Issue'
 function App() {
   return (
-    <AppContainer>
-      <FormIssueTracker />
-      <ListIssueTracker />
-    </AppContainer>
+    <MainLayout>
+      <Issue />
+    </MainLayout>
   )
 }
 

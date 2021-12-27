@@ -1,12 +1,11 @@
 import React from 'react'
 import { Button } from 'react-bootstrap'
-import { filteredStatus } from '../store/reducer/issueTrackerReducer'
-import { useIssueTrackerContext } from '../store/context/issueTrackerContext'
+import { useIssueContext } from 'context/issueTrackerContext'
 const FilterIssueTracker = () => {
-  const [, dispatch] = useIssueTrackerContext()
+  const { setIsFilterBy } = useIssueContext()
 
   const handleChangeStatus = (status) => () => {
-    dispatch(filteredStatus(status))
+    setIsFilterBy(status)
   }
 
   return (
