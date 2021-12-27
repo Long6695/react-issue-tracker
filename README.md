@@ -2,7 +2,7 @@
 
 An application used to manage issue tracker, built with React, JavaScript, and Bootstrap.
 
-In React use useContext hook, useReducer hook.
+In React use useContext hook.
 
 ## Project Screen Shot(s)
 
