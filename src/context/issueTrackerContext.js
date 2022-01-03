@@ -46,9 +46,9 @@ const IssueProvider = ({ children }) => {
     // order
     newIssues = newIssues.sort((a, b) => {
       if (isOrderBy === 'asc') {
-        return a.createdAt > b.createdAt ? 1 : -1
+        return a.description > b.description ? 1 : -1
       }
-      return a.createdAt > b.createdAt ? -1 : 1
+      return a.description > b.description ? -1 : 1
     })
 
     // search
