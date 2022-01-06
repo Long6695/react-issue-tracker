@@ -6,6 +6,7 @@ import { useIssueContext } from 'context/issueTrackerContext'
 
 const SearchIssueTracker = () => {
   const { setSearchText } = useIssueContext()
+
   const [saveText, setSaveText] = useState('')
 
   const debounceRef = useRef(null)

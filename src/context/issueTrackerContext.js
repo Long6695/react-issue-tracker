@@ -53,23 +53,26 @@ const IssueProvider = ({ children }) => {
   let num = 1
 
   useEffect(() => {
-    if (loading) {
-      const observer = new IntersectionObserver(
-        (entries) => {
-          if (entries[0].isIntersecting) {
-            num++
-            setPageNumber((prev) => prev + 1)
+    const options = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 1.0,
+    }
 
-            if (num >= totalPage) {
-              observer.unobserve(pageEnd.current)
-            }
+    if (loading) {
+      const observer = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+          num++
+          setPageNumber((prev) => prev + 1)
+
+          if (num >= totalPage) {
+            observer.unobserve(pageEnd.current)
           }
-        },
-        { threshold: 1 }
-      )
+        }
+      }, options)
       observer.observe(pageEnd.current)
     }
-  }, [loading, num])
+  }, [loading, num, totalPage])
 
   // filter && search
   useEffect(() => {
