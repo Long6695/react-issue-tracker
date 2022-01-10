@@ -3,7 +3,6 @@ import React, {
   useContext,
   useEffect,
   useState,
-  useRef,
 } from 'react'
 
 // service
@@ -17,27 +16,29 @@ const IssueProvider = ({ children }) => {
   const [isAddSuccess, setAddIsSuccess] = useState(null)
   const [isDeleteSuccess, setIsDeleteSuccess] = useState(null)
   const [isFilterBy, setIsFilterBy] = useState('all')
-  const [isOrderBy, setIsOrderBy] = useState('asc')
+  const [isOrderBy, setIsOrderBy] = useState('')
   const [searchText, setSearchText] = useState('')
   const [pageNumber, setPageNumber] = useState(1)
-  const [loading, setLoading] = useState(false)
-  const [totalPage, setTotalPage] = useState(0)
-
+  const [loading, setLoading] = useState(true)
+  const [totalCount, setTotalCount] = useState(10)
   // fetch api
-  const fetchData = async (pageNumber, limitItem = 3) => {
-    const res = await httpRequest.get(
-      `https://tony-json-server.herokuapp.com/api/todos?_page=${pageNumber}&_limit=${limitItem}`
-    )
+  const fetchData = async (page, limitItem = 3) => {
+    
+    if(issues.length === totalCount) {
+      setLoading(false);
+      return;
+    };
 
-    const { totalCount, limit } = res.data.pagination
-    setTotalPage(Math.ceil(totalCount / limit))
+    const res = await httpRequest.get(
+      `https://tony-json-server.herokuapp.com/api/todos?_page=${page}&_limit=${limitItem}`
+    )
 
     const data = res.data.data
 
     setIssues((issues) => [...issues, ...data])
-
-    setLoading(true)
+    setTotalCount(res.data.pagination.totalCount)
   }
+
 
   useEffect(() => {
     try {
@@ -45,34 +46,8 @@ const IssueProvider = ({ children }) => {
     } catch (error) {
       throw new Error(error)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageNumber])
-
-  // infinite scroll
-  const pageEnd = useRef()
-
-  let num = 1
-
-  useEffect(() => {
-    const options = {
-      root: null,
-      rootMargin: '0px',
-      threshold: 1.0,
-    }
-
-    if (loading) {
-      const observer = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting) {
-          num++
-          setPageNumber((prev) => prev + 1)
-
-          if (num >= totalPage) {
-            observer.unobserve(pageEnd.current)
-          }
-        }
-      }, options)
-      observer.observe(pageEnd.current)
-    }
-  }, [loading, num, totalPage])
 
   // filter && search
   useEffect(() => {
@@ -91,12 +66,16 @@ const IssueProvider = ({ children }) => {
       .filter((issue) =>
         issue.description.toLowerCase().includes(searchText.toLowerCase())
       )
-      .sort((a, b) => {
+      
+    if(isOrderBy !== '') {
+      newIssues = newIssues.sort((a, b) => {
         if (isOrderBy === 'asc') {
           return a.description > b.description ? 1 : -1
         }
         return a.description > b.description ? -1 : 1
       })
+    }
+    
 
     setIsFilteredIssues(newIssues)
   }, [isFilterBy, issues, isOrderBy, searchText])
@@ -172,7 +151,6 @@ const IssueProvider = ({ children }) => {
         setSearchText,
         searchText,
         setPageNumber,
-        pageEnd,
         loading,
       }}
     >

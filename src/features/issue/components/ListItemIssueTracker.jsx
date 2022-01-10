@@ -1,6 +1,6 @@
 import React from 'react'
 //libs
-import { Card, Button, Spinner } from 'react-bootstrap'
+import { Card, Button } from 'react-bootstrap'
 // context
 import { useIssueContext } from 'context/issueTrackerContext'
 
@@ -13,8 +13,6 @@ const ListItemIssueTracker = () => {
     isDeleteSuccess,
     updateStateIssue,
     isFilteredIssues,
-    pageEnd,
-    loading,
   } = useIssueContext()
 
   const handleDeleteUser = (id) => () => {
@@ -90,15 +88,9 @@ const ListItemIssueTracker = () => {
               </Card.Body>
             </Card>
           )))}
-      <div ref={pageEnd} className="text-center mb-5">
-        {loading && (
-          <>
-            <Spinner animation="grow" variant="primary" size="sm" />{' '}
-            <Spinner animation="grow" variant="primary" size="sm" />{' '}
-            <Spinner animation="grow" variant="primary" size="sm" />
-          </>
-        )}
-      </div>
+      
+        
+      
     </div>
   )
 }
